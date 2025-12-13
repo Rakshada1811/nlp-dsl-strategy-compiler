@@ -10,8 +10,9 @@ def evaluate_condition(cond, data):
         if isinstance(value, (int, float)):
             return value
 
-        if value == "close":
-            return data["close"][-1]
+        if value in data:
+            return data[value][-1]
+
 
         if value.startswith("sma"):
             period = int(value.split(",")[1].replace(")", ""))
