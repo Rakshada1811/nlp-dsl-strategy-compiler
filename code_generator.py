@@ -13,6 +13,11 @@ def evaluate_condition(cond, data):
         if value in data:
             return data[value][-1]
 
+        try:
+            return float(value)
+        except ValueError:
+            return None
+
 
         if value.startswith("sma"):
             period = int(value.split(",")[1].replace(")", ""))
