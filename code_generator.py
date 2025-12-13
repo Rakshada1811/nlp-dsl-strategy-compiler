@@ -2,32 +2,37 @@ from indicators import sma, rsi
 
 
 def evaluate_condition(cond, data):
+    # Defensive programming
+    assert isinstance(data, dict), "Runtime data must be a dictionary"
+
     left = cond["left"]
     right = cond["right"]
     op = cond["op"]
 
     def resolve(value):
+        # Numeric literal
         if isinstance(value, (int, float)):
             return value
 
+        # Time-series field (close, volume, etc.)
         if value in data:
             return data[value][-1]
 
-        try:
-            return float(value)
-        except ValueError:
-            return None
-
-
-        if value.startswith("sma"):
+        # SMA indicator
+        if isinstance(value, str) and value.startswith("sma"):
             period = int(value.split(",")[1].replace(")", ""))
             return sma(data["close"], period)
 
-        if value.startswith("rsi"):
+        # RSI indicator
+        if isinstance(value, str) and value.startswith("rsi"):
             period = int(value.split(",")[1].replace(")", ""))
             return rsi(data["close"], period)
 
-        return float(value)
+        # Numeric string
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            return None
 
     l = resolve(left)
     r = resolve(right)
@@ -46,7 +51,7 @@ def evaluate_condition(cond, data):
     if op == "==":
         return l == r
 
-    raise ValueError("Unsupported operator")
+    raise ValueError(f"Unsupported operator: {op}")
 
 
 def evaluate_ast(ast, data):
@@ -59,6 +64,8 @@ def evaluate_ast(ast, data):
                 evaluate_condition(cond, data)
                 for cond in block["conditions"]
             )
+
+        raise ValueError("Unsupported block type")
 
     return {
         "ENTRY": eval_block(ast["ENTRY"]),
