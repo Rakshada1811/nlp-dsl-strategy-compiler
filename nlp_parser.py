@@ -1,6 +1,5 @@
 import re
 
-
 def parse_natural_language(text: str):
     """
     Convert simple natural language trading rules
