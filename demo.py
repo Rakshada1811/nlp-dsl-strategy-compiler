@@ -11,7 +11,6 @@ EXIT:
 
 ast = parse_dsl(dsl)
 
-
 price_data = {
     "close": [
         100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
@@ -27,4 +26,7 @@ price_data = {
     ]
 }
 
-run_backtest(ast, price_data)
+signals = run_backtest(ast, price_data)
+
+print("Backtest completed")
+print("Sample signals:", signals[:5] if signals else signals)
